@@ -1,0 +1,22 @@
+.airplane {
+  width: 500px;
+  position: absolute;
+  bottom: 300px;
+  transform-origin: 100% 50%;
+}
+
+.animate {
+  animation: plan 2s linear infinite;
+}
+
+@keyframes plan {
+  0% {
+    transform: translateX(0px) translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateX(300px) translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateX(1000px) translateY(-500px) rotate(-20deg);
+  }
+}
