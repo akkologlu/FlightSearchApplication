@@ -4,7 +4,7 @@ import "../style/Form.css";
 import { IoIosSwap } from "react-icons/io";
 import { TiPlus, TiMinus } from "react-icons/ti";
 
-function Form({ onFormSubmit }) {
+function Form({ onFormSubmit, flightSearch }) {
   const [radioButton, setRadioButton] = useState(false);
   const [airports, setAirports] = useState([]);
   const [fromAirport, setFromAirport] = useState({
@@ -71,6 +71,15 @@ function Form({ onFormSubmit }) {
   const handleSearch = (e) => {
     e.preventDefault();
     onFormSubmit();
+    flightSearch({
+      fromAirport,
+      toAirport,
+      departureDate,
+      returnDate,
+      adults,
+      children,
+      infants,
+    });
   };
   const updatePassengers = (category, operation) => {
     switch (category) {
@@ -93,7 +102,6 @@ function Form({ onFormSubmit }) {
       // Handle invalid category
     }
   };
-  console.log(fromAirport, toAirport);
   return (
     <div>
       <div className="flex  h-screen items-center justify-center font-roboto">

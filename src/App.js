@@ -6,6 +6,7 @@ import List from "./components/List";
 function App() {
   const [animating, setAnimating] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const [flightData, setFlightData] = useState({});
 
   const handleFormSubmit = () => {
     setAnimating(true); // Animasyonu başlat
@@ -16,19 +17,27 @@ function App() {
       setWaiting(true); // "Veriler geldi" mesajını göstermek için
 
       // İsteğe bağlı olarak, bir süre sonra "Veriler geldi" mesajını da kaldırabilirsiniz
-      setTimeout(() => {
-        setWaiting(false);
-      }, 3000);
+      // setTimeout(() => {
+      //   setWaiting(false);
+      // }, 3000);
     }, 2000);
+  };
+
+  const flightSearch = (flightData) => {
+    setFlightData(flightData);
   };
   return (
     <div className="App">
       <div className="flex">
         <div className="w-[40%]">
-          <Form onFormSubmit={handleFormSubmit} />
+          <Form onFormSubmit={handleFormSubmit} flightSearch={flightSearch} />
         </div>
         <div className="w-[60%]">
-          <List waiting={waiting} animating={animating} />
+          <List
+            waiting={waiting}
+            animating={animating}
+            flightData={flightData}
+          />
         </div>
       </div>
     </div>
