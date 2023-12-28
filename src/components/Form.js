@@ -210,8 +210,8 @@ function Form({ onFormSubmit, flightSearch }) {
                 <input
                   type="date"
                   onChange={(e) => setDepartureDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  max={returnDate}
+                  min={"2024-01-07"}
+                  max={returnDate ? returnDate : "2024-01-09"}
                   className="inputStyle"
                 />
               </div>
@@ -230,11 +230,8 @@ function Form({ onFormSubmit, flightSearch }) {
                       onChange={(e) => {
                         setReturnDate(e.target.value);
                       }}
-                      min={
-                        departureDate
-                          ? departureDate
-                          : new Date().toISOString().split("T")[0]
-                      }
+                      min={departureDate ? departureDate : "2024-01-07"}
+                      max={"2024-01-09"}
                       className="inputStyle"
                     />
                   </div>

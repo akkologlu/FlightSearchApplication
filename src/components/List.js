@@ -7,11 +7,44 @@ import Flight from "./Flight";
 
 function List({ waiting, animating, flightData }) {
   const [flights, setFlights] = useState([]);
+  const [returnFlights, setReturnFlights] = useState([]);
   const [fetched, setFetched] = useState(false);
+  const [returnFetched, setReturnFetched] = useState(false);
   const style = {
     backgroundImage: `url(${clouds})`,
   };
   useEffect(() => {
+    function calculateTimeDifference(startDateTime, endDateTime) {
+      const startTime = new Date(startDateTime);
+      const endTime = new Date(endDateTime);
+      const differenceInMs = endTime - startTime;
+
+      const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
+      const minutes = Math.floor(
+        (differenceInMs % (1000 * 60 * 60)) / (1000 * 60)
+      );
+
+      return `${hours}h ${minutes}m`;
+    }
+    if (flightData && flightData.returnDate) {
+      axios
+        .get(
+          `https://658c2164859b3491d3f58900.mockapi.io/flights/${flightData.returnDate}`
+        )
+        .then((response) => {
+          response.data.flights.forEach((flight) => {
+            flight.duration = calculateTimeDifference(
+              flight.departureTime,
+              flight.arrivalTime
+            );
+          });
+          setReturnFlights(response.data);
+          setReturnFetched(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
     // Only proceed if flightData.departureDate is defined
     if (flightData && flightData.departureDate) {
       axios
@@ -19,6 +52,12 @@ function List({ waiting, animating, flightData }) {
           `https://658c2164859b3491d3f58900.mockapi.io/flights/${flightData.departureDate}`
         )
         .then((response) => {
+          response.data.flights.forEach((flight) => {
+            flight.duration = calculateTimeDifference(
+              flight.departureTime,
+              flight.arrivalTime
+            );
+          });
           setFlights(response.data);
           setFetched(true);
         })
@@ -27,9 +66,23 @@ function List({ waiting, animating, flightData }) {
         });
     }
   }, [flightData]);
-  console.log(flights);
+
+  function filterFlights(array, array2) {
+    return [
+      array.flights.filter(
+        (flight) =>
+          flightData.fromAirport.code === flight.departureAirport &&
+          flightData.toAirport.code === flight.arrivalAirport
+      ),
+      array2.flights.filter(
+        (flight) =>
+          flightData.toAirport.code === flight.departureAirport &&
+          flightData.fromAirport.code === flight.arrivalAirport
+      ),
+    ];
+  }
   return (
-    <div>
+    <div className="m-3 ">
       {animating ? (
         <div
           className="container relative overflow-hidden w-full h-screen bg-blue-400 bg-no-repeat bg-center bg-cover"
@@ -40,19 +93,34 @@ function List({ waiting, animating, flightData }) {
           </div>
         </div>
       ) : waiting ? (
-        <div>
-          {fetched ? (
+        <div className="space-y-2">
+          {fetched && returnFetched ? (
             <>
-              {flights.flights.map((flight) => {
-                return (
-                  <div key={flight.date}>
-                    <Flight flight={flight} />
-                  </div>
-                );
-              })}
+              {<Flight filterFlights={filterFlights(flights, returnFlights)} />}
             </>
           ) : (
-            <>YÜKLENİYOR</>
+            <>
+              {fetched && flightData.returnDate === "" ? (
+                <>
+                  {flights.flights
+                    .filter(
+                      (flight) =>
+                        flightData.fromAirport.code ===
+                          flight.departureAirport &&
+                        flightData.toAirport.code === flight.arrivalAirport
+                    )
+                    .map((flight) => {
+                      return (
+                        <div key={flight.date}>
+                          <Flight flight={flight} />
+                        </div>
+                      );
+                    })}
+                </>
+              ) : (
+                <>Yükleniyor</>
+              )}
+            </>
           )}
         </div>
       ) : (
