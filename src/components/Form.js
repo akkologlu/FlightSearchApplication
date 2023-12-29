@@ -75,7 +75,7 @@ function Form({ onFormSubmit, flightSearch }) {
       fromAirport,
       toAirport,
       departureDate,
-      returnDate,
+      returnDate: radioButton ? "" : returnDate,
       adults,
       children,
       infants,
@@ -127,7 +127,7 @@ function Form({ onFormSubmit, flightSearch }) {
                 checked={radioButton === false}
                 className="mr-2"
               />
-              <label className="radioLabel">RoundTrip</label>
+              <label className="radioLabel">Round Trip</label>
             </div>
           </div>
           {/* Airports Form */}

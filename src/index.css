@@ -43,3 +43,11 @@ code {
 .ulStyle {
   @apply absolute z-10 bg-white border border-blue-900 w-52 max-h-40 overflow-auto;
 }
+
+.sortButtonActive {
+  @apply bg-blue-800 text-white py-1 px-3 rounded-lg;
+}
+
+.sortButtonPassive {
+  @apply border border-blue-800 text-black py-1 px-3 rounded-lg;
+}

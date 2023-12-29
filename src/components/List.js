@@ -10,6 +10,9 @@ function List({ waiting, animating, flightData }) {
   const [returnFlights, setReturnFlights] = useState([]);
   const [fetched, setFetched] = useState(false);
   const [returnFetched, setReturnFetched] = useState(false);
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [activeButton, setActiveButton] = useState("");
   const style = {
     backgroundImage: `url(${clouds})`,
   };
@@ -67,60 +70,103 @@ function List({ waiting, animating, flightData }) {
     }
   }, [flightData]);
 
-  function filterFlights(array, array2) {
-    return [
-      array.flights.filter(
+  const sortFlights = (flightsArray) => {
+    return flightsArray.sort((a, b) => {
+      let comparisonResult = 0;
+      if (sortKey === "duration") {
+        const durationA = durationInMinutes(a.duration);
+        const durationB = durationInMinutes(b.duration);
+        comparisonResult = durationA - durationB;
+      } else if (sortKey === "departureTime") {
+        comparisonResult =
+          new Date(a.departureTime) - new Date(b.departureTime);
+      } else if (sortKey === "price") {
+        comparisonResult = a.price - b.price;
+      }
+      return sortDirection === "asc" ? comparisonResult : -comparisonResult;
+    });
+  };
+
+  const durationInMinutes = (duration) => {
+    const [hours, minutes] = duration.split("h").map((v) => parseInt(v));
+    return hours * 60 + minutes;
+  };
+
+  const sortedDepartureFlights =
+    flights.flights &&
+    sortFlights(
+      flights.flights.filter(
         (flight) =>
           flightData.fromAirport.code === flight.departureAirport &&
           flightData.toAirport.code === flight.arrivalAirport
-      ),
-      array2.flights.filter(
+      )
+    );
+
+  const sortedReturnFlights =
+    flightData.returnDate &&
+    returnFlights.flights &&
+    sortFlights(
+      returnFlights.flights.filter(
         (flight) =>
           flightData.toAirport.code === flight.departureAirport &&
           flightData.fromAirport.code === flight.arrivalAirport
-      ),
-    ];
-  }
+      )
+    );
   return (
-    <div className="m-3 ">
-      {animating ? (
-        <div
-          className="container relative overflow-hidden w-full h-screen bg-blue-400 bg-no-repeat bg-center bg-cover"
-          style={style}
-        >
-          <div className="runway">
-            <img src={plane} alt="" className={`airplane animate`} />
+    <div className=" font-roboto">
+      {waiting && !animating ? (
+        <div className="space-y-2 lg:pr-12 lg:my-12 my-2 m-3">
+          <div className="flex space-x-4">
+            <button
+              className={
+                activeButton === "shortest"
+                  ? `sortButtonActive`
+                  : `sortButtonPassive`
+              }
+              onClick={() => {
+                setSortKey("duration");
+                setSortDirection("asc");
+                setActiveButton("shortest");
+              }}
+            >
+              Shortest
+            </button>
+            <button
+              className={
+                activeButton === "earliest"
+                  ? `sortButtonActive`
+                  : `sortButtonPassive`
+              }
+              onClick={() => {
+                setSortKey("departureTime");
+                setSortDirection("asc");
+                setActiveButton("earliest");
+              }}
+            >
+              Earliest
+            </button>
+            <button
+              className={
+                activeButton === "cheapest"
+                  ? `sortButtonActive`
+                  : `sortButtonPassive`
+              }
+              onClick={() => {
+                setSortKey("price");
+                setSortDirection("asc");
+                setActiveButton("cheapest");
+              }}
+            >
+              Cheapest
+            </button>
           </div>
-        </div>
-      ) : waiting ? (
-        <div className="space-y-2">
-          {fetched && returnFetched ? (
-            <>
-              {<Flight filterFlights={filterFlights(flights, returnFlights)} />}
-            </>
+
+          {fetched && (returnFetched || flightData.returnDate === "") ? (
+            <Flight
+              filterFlights={[sortedDepartureFlights, sortedReturnFlights]}
+            />
           ) : (
-            <>
-              {fetched && flightData.returnDate === "" ? (
-                <>
-                  {flights.flights
-                    .filter(
-                      (flight) =>
-                        flightData.fromAirport.code ===
-                          flight.departureAirport &&
-                        flightData.toAirport.code === flight.arrivalAirport
-                    )
-                    .map((flight) => {
-                      return (
-                        <div key={flight.date}>
-                          <Flight flight={flight} />
-                        </div>
-                      );
-                    })}
-                </>
-              ) : (
-                <>Yükleniyor</>
-              )}
-            </>
+            <>Yükleniyor</>
           )}
         </div>
       ) : (
@@ -129,7 +175,11 @@ function List({ waiting, animating, flightData }) {
           style={style}
         >
           <div className="runway">
-            <img src={plane} alt="" className={`airplane `} />
+            <img
+              src={plane}
+              alt=""
+              className={`airplane ${animating ? "animate" : ""}`}
+            />
           </div>
         </div>
       )}

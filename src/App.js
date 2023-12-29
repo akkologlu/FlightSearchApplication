@@ -28,11 +28,11 @@ function App() {
   };
   return (
     <div className="App">
-      <div className="flex">
-        <div className="w-[40%]">
+      <div className="flex flex-wrap">
+        <div className="lg:w-[40%] flex justify-center w-full">
           <Form onFormSubmit={handleFormSubmit} flightSearch={flightSearch} />
         </div>
-        <div className="w-[60%]">
+        <div className="lg:w-[60%]  w-full ">
           <List
             waiting={waiting}
             animating={animating}

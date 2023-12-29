@@ -23,12 +23,11 @@ function Flight({ filterFlights, flight }) {
 
   const FlightCard = ({ flight }) => {
     const logo = getLogo(flight.airline);
-
     return (
-      <button className="relative">
+      <button className="relative w-full">
         <div
           id="card"
-          className="flex min-h-24 space-x-12 border border-gray-200 w-full p-2 items-center justify-between mx-24 px-12 shadow-lg rounded-xl"
+          className="flex min-h-24 space-x-12 border border-gray-200 w-full p-2 items-center justify-between px-12 shadow-lg rounded-xl"
         >
           <div id="logo">
             {logo && <img src={logo} alt="" className="w-16" />}
@@ -58,27 +57,41 @@ function Flight({ filterFlights, flight }) {
             <p>{flight.price}$</p>
           </div>
         </div>
-        <MdExpandMore className="absolute -right-[85px] top-9" />
+        <MdExpandMore className="absolute right-3 top-10" />
       </button>
     );
   };
-
+  console.log(filterFlights);
   return (
-    <div className="flex font-roboto text-xl text-gray-600 ">
-      {filterFlights ? (
-        <div className="flex flex-col">
-          <h1>GİDİŞ</h1>
-          {filterFlights[0].map((flight) => (
-            <FlightCard key={flight.id} flight={flight} />
-          ))}
-          <h1>DÖNÜŞ</h1>
-          {filterFlights[1].map((flight) => (
-            <FlightCard key={flight.id} flight={flight} />
-          ))}
-        </div>
-      ) : (
-        <FlightCard flight={flight} />
-      )}
+    <div className="flex w-full font-roboto text-xl text-gray-600">
+      <div className="flex flex-col w-full space-y-2">
+        <h1>
+          {filterFlights[0][0].departureTime
+            .split("T")[0]
+            .split("-")
+            .slice(0, 3)
+            .reverse()
+            .join(".")}
+        </h1>
+        {filterFlights[0].map((flight) => (
+          <FlightCard key={flight.id} flight={flight} />
+        ))}
+        {filterFlights[1] && (
+          <>
+            <h1>
+              {filterFlights[1][0].departureTime
+                .split("T")[0]
+                .split("-")
+                .slice(0, 3)
+                .reverse()
+                .join(".")}
+            </h1>
+            {filterFlights[1].map((flight) => (
+              <FlightCard key={flight.id} flight={flight} />
+            ))}
+          </>
+        )}
+      </div>
     </div>
   );
 }
