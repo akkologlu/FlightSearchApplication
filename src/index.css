@@ -45,9 +45,29 @@ code {
 }
 
 .sortButtonActive {
-  @apply bg-blue-800 text-white py-1 px-3 rounded-lg;
+  @apply bg-blue-800 text-white py-1 px-3 rounded-lg w-[100px];
 }
 
 .sortButtonPassive {
-  @apply border border-blue-800 text-black py-1 px-3 rounded-lg;
+  @apply border border-blue-800 text-black py-1 px-3 rounded-lg w-[100px];
+}
+
+.error {
+  @apply text-red-500 text-xs font-bold mt-1;
+}
+
+.detailh1 {
+  @apply text-lg font-bold text-blue-950;
+}
+
+.detailCard {
+  @apply flex flex-col items-center p-6 rounded-lg shadow-lg relative md:min-h-64 min-h-48;
+}
+
+.detailItem {
+  @apply flex space-x-1 items-center;
+}
+
+.detailPrice {
+  @apply absolute bottom-3 bg-blue-800 text-white px-2 rounded-lg;
 }

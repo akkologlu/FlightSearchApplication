@@ -22,6 +22,10 @@ function Form({ onFormSubmit, flightSearch }) {
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
+  const [fromAirportError, setFromAirportError] = useState(false);
+  const [toAirportError, setToAirportError] = useState(false);
+  const [departureDateError, setDepartureDateError] = useState(false);
+  const [returnDateError, setReturnDateError] = useState(false);
 
   useEffect(() => {
     axios
@@ -48,9 +52,11 @@ function Form({ onFormSubmit, flightSearch }) {
     if (isFrom) {
       setFromAirport(value);
       filterAirports(value, setFilteredFromAirports);
+      setFromAirportError(false);
     } else {
       setToAirport(value);
       filterAirports(value, setFilteredToAirports);
+      setToAirportError(false);
     }
   };
 
@@ -58,11 +64,14 @@ function Form({ onFormSubmit, flightSearch }) {
     if (isFrom) {
       setFromAirport({ city: airport.city, code: airport.code });
       setFilteredFromAirports([]);
+      setFromAirportError(false);
     } else {
       setToAirport({ city: airport.city, code: airport.code });
       setFilteredToAirports([]);
+      setToAirportError(false);
     }
   };
+
   const swapAirports = (e) => {
     e.preventDefault();
     setFromAirport(toAirport);
@@ -70,17 +79,56 @@ function Form({ onFormSubmit, flightSearch }) {
   };
   const handleSearch = (e) => {
     e.preventDefault();
-    onFormSubmit();
-    flightSearch({
-      fromAirport,
-      toAirport,
-      departureDate,
-      returnDate: radioButton ? "" : returnDate,
-      adults,
-      children,
-      infants,
-    });
+    let isValid = true;
+    const fromAirportValid = airports.some(
+      (airport) =>
+        airport.city === fromAirport.city && airport.code === fromAirport.code
+    );
+    const toAirportValid = airports.some(
+      (airport) =>
+        airport.city === toAirport.city && airport.code === toAirport.code
+    );
+    // fromAirport kontrolü
+    if (!fromAirportValid) {
+      setFromAirportError(true);
+      isValid = false;
+    }
+
+    if (!toAirportValid) {
+      setToAirportError(true);
+      isValid = false;
+    }
+
+    // departureDate kontrolü
+    if (!departureDate) {
+      setDepartureDateError(true);
+      isValid = false;
+    } else {
+      setDepartureDateError(false);
+    }
+
+    // radioButton durumuna göre returnDate kontrolü
+    if (!radioButton && !returnDate) {
+      setReturnDateError(true);
+      isValid = false;
+    } else {
+      setReturnDateError(false);
+    }
+
+    if (isValid) {
+      onFormSubmit();
+      flightSearch({
+        fromAirport,
+        toAirport,
+        departureDate,
+        returnDate: radioButton ? "" : returnDate,
+        adults,
+        children,
+        infants,
+      });
+    }
   };
+
   const updatePassengers = (category, operation) => {
     switch (category) {
       case "adults":
@@ -99,15 +147,17 @@ function Form({ onFormSubmit, flightSearch }) {
         );
         break;
       default:
-      // Handle invalid category
     }
   };
   return (
     <div>
-      <div className="flex  h-screen items-center justify-center font-roboto">
-        <form className="w-[500px] flex flex-col space-y-12 ">
+      <div className="flex mt-12 lg:mt-0 lg:h-screen items-center justify-center font-roboto">
+        <form className=" flex flex-col space-y-12 ">
           {/* Radio Buttons */}
-          <div id="radioButtons" className="flex space-x-11">
+          <div
+            id="radioButtons"
+            className="flex space-x-11 md:justify-start justify-center"
+          >
             <div id="radio1 flex">
               <input
                 type="radio"
@@ -131,7 +181,10 @@ function Form({ onFormSubmit, flightSearch }) {
             </div>
           </div>
           {/* Airports Form */}
-          <div id="airportForm" className="flex space-x-5 items-center">
+          <div
+            id="airportForm"
+            className="flex md:space-x-5 items-center  flex-col md:flex-row "
+          >
             {/* From Airport */}
             <div className="relative flex flex-col">
               <div>
@@ -158,6 +211,9 @@ function Form({ onFormSubmit, flightSearch }) {
                   </ul>
                 )}
               </div>
+              {fromAirportError && (
+                <div className="error">* Please enter a valid airport.</div>
+              )}
             </div>
             {/*Swap button */}
             <div>
@@ -196,10 +252,18 @@ function Form({ onFormSubmit, flightSearch }) {
                   </ul>
                 )}
               </div>
+              <div>
+                {toAirportError && (
+                  <div className="error">* Please enter a valid airport.</div>
+                )}
+              </div>
             </div>
           </div>
           {/* Date Picker */}
-          <div id="datePicker" className="flex space-x-16">
+          <div
+            id="datePicker"
+            className="flex md:space-x-16 flex-col md:flex-row items-center space-y-5 md:space-y-0"
+          >
             <div className="flex flex-col">
               <div>
                 <label className="font-bold text-blue-900">
@@ -209,12 +273,18 @@ function Form({ onFormSubmit, flightSearch }) {
               <div>
                 <input
                   type="date"
-                  onChange={(e) => setDepartureDate(e.target.value)}
+                  onChange={(e) => {
+                    setDepartureDate(e.target.value);
+                    setDepartureDateError(false);
+                  }}
                   min={"2024-01-07"}
-                  max={returnDate ? returnDate : "2024-01-09"}
+                  max={returnDate ? returnDate : "2024-01-10"}
                   className="inputStyle"
                 />
               </div>
+              {departureDateError && (
+                <div className="error">* Please select a departure date.</div>
+              )}
             </div>
             <div>
               {radioButton === false ? (
@@ -229,11 +299,19 @@ function Form({ onFormSubmit, flightSearch }) {
                       type="date"
                       onChange={(e) => {
                         setReturnDate(e.target.value);
+                        setReturnDateError(false);
                       }}
                       min={departureDate ? departureDate : "2024-01-07"}
-                      max={"2024-01-09"}
+                      max={"2024-01-10"}
                       className="inputStyle"
                     />
+                  </div>
+                  <div>
+                    {radioButton === false && returnDateError && (
+                      <div className="error">
+                        * Please select a departure date.
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -249,6 +327,7 @@ function Form({ onFormSubmit, flightSearch }) {
                       type="date"
                       onChange={(e) => {
                         setReturnDate(e.target.value);
+                        setReturnDateError(false);
                       }}
                       min={departureDate}
                       className=" inputStyle"
@@ -259,7 +338,7 @@ function Form({ onFormSubmit, flightSearch }) {
             </div>
           </div>
           {/* Passengers */}
-          <div className="flex space-x-16">
+          <div className="flex md:space-x-16 flex-col md:flex-row space-x-0 items-center space-y-4 md:space-y-0">
             <div className="flex flex-col space-y-2">
               {/* Adults */}
               <div>
@@ -294,7 +373,7 @@ function Form({ onFormSubmit, flightSearch }) {
             </div>
 
             {/* Children */}
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 items-center">
               <div>
                 <label className="passengerLabel">
                   Children <span className="passengerAgeSpan">2-12 years</span>
@@ -360,7 +439,7 @@ function Form({ onFormSubmit, flightSearch }) {
             {/* Infants */}
           </div>
           {/* Button */}
-          <div id="button">
+          <div id="button" className="flex justify-center md:justify-start">
             <button
               className="bg-blue-900 px-4 py-2 text-white rounded-xl"
               onClick={handleSearch}

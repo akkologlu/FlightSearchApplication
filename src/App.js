@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./App.css";
 import Form from "./components/Form";
 import List from "./components/List";
@@ -6,33 +6,43 @@ import List from "./components/List";
 function App() {
   const [animating, setAnimating] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const [animationPlayed, setAnimationPlayed] = useState(false);
   const [flightData, setFlightData] = useState({});
+  const listRef = useRef(null); // List komponenti için referans
+
+  const scrollToView = () => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const handleFormSubmit = () => {
-    setAnimating(true); // Animasyonu başlat
+    if (!animationPlayed) {
+      scrollToView();
+      setAnimating(true);
+      setAnimationPlayed(true);
 
-    // Animasyonun süresi kadar bekleyin (örneğin 3 saniye)
-    setTimeout(() => {
-      setAnimating(false); // Animasyonu durdur
-      setWaiting(true); // "Veriler geldi" mesajını göstermek için
-
-      // İsteğe bağlı olarak, bir süre sonra "Veriler geldi" mesajını da kaldırabilirsiniz
-      // setTimeout(() => {
-      //   setWaiting(false);
-      // }, 3000);
-    }, 2000);
+      setTimeout(() => {
+        setAnimating(false);
+        setWaiting(true);
+        // Form submit edildiğinde list bölümüne kaydır
+      }, 2000);
+    } else {
+      scrollToView(); // Form daha önce submit edilmişse, yine list bölümüne kaydır
+    }
   };
 
   const flightSearch = (flightData) => {
     setFlightData(flightData);
   };
+
   return (
     <div className="App">
       <div className="flex flex-wrap">
         <div className="lg:w-[40%] flex justify-center w-full">
           <Form onFormSubmit={handleFormSubmit} flightSearch={flightSearch} />
         </div>
-        <div className="lg:w-[60%]  w-full ">
+        <div className="lg:w-[60%] w-full" ref={listRef}>
           <List
             waiting={waiting}
             animating={animating}

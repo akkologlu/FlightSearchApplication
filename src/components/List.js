@@ -4,6 +4,7 @@ import plane from "../assets/plane.png";
 import "../style/List.css";
 import axios from "axios";
 import Flight from "./Flight";
+import sadplane from "../assets/sadplane.png";
 
 function List({ waiting, animating, flightData }) {
   const [flights, setFlights] = useState([]);
@@ -13,6 +14,8 @@ function List({ waiting, animating, flightData }) {
   const [sortKey, setSortKey] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const [activeButton, setActiveButton] = useState("");
+  const [outOfDateDeparture, setOutOfDateDeparture] = useState(false);
+  const [outOfDateReturn, setOutOfDateReturn] = useState(false);
   const style = {
     backgroundImage: `url(${clouds})`,
   };
@@ -43,9 +46,11 @@ function List({ waiting, animating, flightData }) {
           });
           setReturnFlights(response.data);
           setReturnFetched(true);
+          setOutOfDateReturn(false);
         })
         .catch((error) => {
           console.log(error);
+          setOutOfDateReturn(true);
         });
     }
     // Only proceed if flightData.departureDate is defined
@@ -63,9 +68,11 @@ function List({ waiting, animating, flightData }) {
           });
           setFlights(response.data);
           setFetched(true);
+          setOutOfDateDeparture(false);
         })
         .catch((error) => {
           console.log(error);
+          setOutOfDateDeparture(true);
         });
     }
   }, [flightData]);
@@ -115,58 +122,80 @@ function List({ waiting, animating, flightData }) {
   return (
     <div className=" font-roboto">
       {waiting && !animating ? (
-        <div className="space-y-2 lg:pr-12 lg:my-12 my-2 m-3">
-          <div className="flex space-x-4">
-            <button
-              className={
-                activeButton === "shortest"
-                  ? `sortButtonActive`
-                  : `sortButtonPassive`
-              }
-              onClick={() => {
-                setSortKey("duration");
-                setSortDirection("asc");
-                setActiveButton("shortest");
-              }}
-            >
-              Shortest
-            </button>
-            <button
-              className={
-                activeButton === "earliest"
-                  ? `sortButtonActive`
-                  : `sortButtonPassive`
-              }
-              onClick={() => {
-                setSortKey("departureTime");
-                setSortDirection("asc");
-                setActiveButton("earliest");
-              }}
-            >
-              Earliest
-            </button>
-            <button
-              className={
-                activeButton === "cheapest"
-                  ? `sortButtonActive`
-                  : `sortButtonPassive`
-              }
-              onClick={() => {
-                setSortKey("price");
-                setSortDirection("asc");
-                setActiveButton("cheapest");
-              }}
-            >
-              Cheapest
-            </button>
-          </div>
-
-          {fetched && (returnFetched || flightData.returnDate === "") ? (
-            <Flight
-              filterFlights={[sortedDepartureFlights, sortedReturnFlights]}
-            />
+        <div className="space-y-2 lg:pr-12 lg:my-12 my-2 lg:m-3 w-full">
+          {outOfDateDeparture && outOfDateReturn ? (
+            <div className="text-blue-800 h-screen flex flex-col justify-center items-center space-y-12 text-3xl">
+              <div className="">
+                <img
+                  src={sadplane}
+                  alt=""
+                  className="md:w-[500px] w-[150px] rounded-full"
+                />
+              </div>
+              <p>
+                Unfortunately, there are no flights available for the selected
+                date.
+              </p>
+            </div>
           ) : (
-            <>Yükleniyor</>
+            <>
+              {fetched && (returnFetched || flightData.returnDate === "") ? (
+                <>
+                  <div className="flex md:space-x-4 md:flex-row flex-col space-y-2 md:space-y-0 items-center mt-10 justify-center lg:justify-start">
+                    <button
+                      className={
+                        activeButton === "shortest"
+                          ? `sortButtonActive`
+                          : `sortButtonPassive`
+                      }
+                      onClick={() => {
+                        setSortKey("duration");
+                        setSortDirection("asc");
+                        setActiveButton("shortest");
+                      }}
+                    >
+                      Shortest
+                    </button>
+                    <button
+                      className={
+                        activeButton === "earliest"
+                          ? `sortButtonActive`
+                          : `sortButtonPassive`
+                      }
+                      onClick={() => {
+                        setSortKey("departureTime");
+                        setSortDirection("asc");
+                        setActiveButton("earliest");
+                      }}
+                    >
+                      Earliest
+                    </button>
+                    <button
+                      className={
+                        activeButton === "cheapest"
+                          ? `sortButtonActive`
+                          : `sortButtonPassive`
+                      }
+                      onClick={() => {
+                        setSortKey("price");
+                        setSortDirection("asc");
+                        setActiveButton("cheapest");
+                      }}
+                    >
+                      Cheapest
+                    </button>
+                  </div>
+                  <Flight
+                    filterFlights={[
+                      sortedDepartureFlights,
+                      sortedReturnFlights,
+                    ]}
+                  />
+                </>
+              ) : (
+                <>Yükleniyor</>
+              )}
+            </>
           )}
         </div>
       ) : (
