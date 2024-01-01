@@ -50,73 +50,83 @@ function Form({ onFormSubmit, flightSearch }) {
   const handleAirportChange = (event, isFrom) => {
     const value = event.target.value;
     if (isFrom) {
-      setFromAirport(value);
-      filterAirports(value, setFilteredFromAirports);
-      setFromAirportError(false);
+      // If isFrom is true
+      setFromAirport(value); // Set fromAirport to value
+      filterAirports(value, setFilteredFromAirports); // Filter airports
+      setFromAirportError(false); // Set fromAirportError to false
     } else {
-      setToAirport(value);
-      filterAirports(value, setFilteredToAirports);
-      setToAirportError(false);
+      setToAirport(value); // Set toAirport to value
+      filterAirports(value, setFilteredToAirports); // Filter airports
+      setToAirportError(false); // Set toAirportError to false
     }
   };
 
   const handleAirportClick = (airport, isFrom) => {
     if (isFrom) {
-      setFromAirport({ city: airport.city, code: airport.code });
-      setFilteredFromAirports([]);
-      setFromAirportError(false);
+      // If isFrom is true
+      setFromAirport({ city: airport.city, code: airport.code }); // Set fromAirport to airport
+      setFilteredFromAirports([]); // Set filteredFromAirports to empty array
+      setFromAirportError(false); // Set fromAirportError to false
     } else {
-      setToAirport({ city: airport.city, code: airport.code });
-      setFilteredToAirports([]);
-      setToAirportError(false);
+      setToAirport({ city: airport.city, code: airport.code }); // Set toAirport to airport
+      setFilteredToAirports([]); // Set filteredToAirports to empty array
+      setToAirportError(false); // Set toAirportError to false
     }
   };
 
   const swapAirports = (e) => {
+    // Swap airports
     e.preventDefault();
-    setFromAirport(toAirport);
-    setToAirport(fromAirport);
+    setFromAirport(toAirport); // Set fromAirport to toAirport
+    setToAirport(fromAirport); // Set toAirport to fromAirport
   };
   const handleSearch = (e) => {
     e.preventDefault();
     let isValid = true;
     const fromAirportValid = airports.some(
+      // If there is an airport that matches the condition
       (airport) =>
-        airport.city === fromAirport.city && airport.code === fromAirport.code
+        airport.city === fromAirport.city && airport.code === fromAirport.code // If airport.city is equal to fromAirport.city and airport.code is equal to fromAirport.code
     );
     const toAirportValid = airports.some(
+      // If there is an airport that matches the condition
       (airport) =>
-        airport.city === toAirport.city && airport.code === toAirport.code
+        airport.city === toAirport.city && airport.code === toAirport.code // If airport.city is equal to toAirport.city and airport.code is equal to toAirport.code
     );
-    // fromAirport kontrolü
+    // fromAirport control
     if (!fromAirportValid) {
-      setFromAirportError(true);
-      isValid = false;
+      // If fromAirportValid is false
+      setFromAirportError(true); // Set fromAirportError to true
+      isValid = false; // Set isValid to false
     }
 
     if (!toAirportValid) {
-      setToAirportError(true);
-      isValid = false;
+      // If toAirportValid is false
+      setToAirportError(true); // Set toAirportError to true
+      isValid = false; // Set isValid to false
     }
 
-    // departureDate kontrolü
+    // departureDate control
     if (!departureDate) {
-      setDepartureDateError(true);
-      isValid = false;
+      // If departureDate is no departure date
+      setDepartureDateError(true); // Set departureDateError to true
+      isValid = false; // Set isValid to false
     } else {
-      setDepartureDateError(false);
+      setDepartureDateError(false); // Set departureDateError to false
     }
 
     // radioButton durumuna göre returnDate kontrolü
     if (!radioButton && !returnDate) {
-      setReturnDateError(true);
-      isValid = false;
+      // If radioButton is false and returnDate is no return date
+      setReturnDateError(true); // Set returnDateError to true
+      isValid = false; // Set isValid to false
     } else {
-      setReturnDateError(false);
+      setReturnDateError(false); // Set returnDateError to false
     }
 
     if (isValid) {
-      onFormSubmit();
+      // If isValid is true
+      onFormSubmit(); // Call onFormSubmit
       flightSearch({
         fromAirport,
         toAirport,
@@ -130,20 +140,21 @@ function Form({ onFormSubmit, flightSearch }) {
   };
 
   const updatePassengers = (category, operation) => {
+    // Update passengers
     switch (category) {
       case "adults":
         setAdults(
-          operation === "increment" ? adults + 1 : Math.max(adults - 1, 0)
+          operation === "increment" ? adults + 1 : Math.max(adults - 1, 0) // If operation is increment, increment adults by 1, else decrement adults by 1
         );
         break;
       case "children":
         setChildren(
-          operation === "increment" ? children + 1 : Math.max(children - 1, 0)
+          operation === "increment" ? children + 1 : Math.max(children - 1, 0) // If operation is increment, increment children by 1, else decrement children by 1
         );
         break;
       case "infants":
         setInfants(
-          operation === "increment" ? infants + 1 : Math.max(infants - 1, 0)
+          operation === "increment" ? infants + 1 : Math.max(infants - 1, 0) // If operation is increment, increment infants by 1, else decrement infants by 1
         );
         break;
       default:
@@ -197,7 +208,7 @@ function Form({ onFormSubmit, flightSearch }) {
                   onChange={(e) => handleAirportChange(e, true)}
                   className="inputStyle"
                 />
-                {fromAirport && (
+                {fromAirport && ( // If fromAirport is true
                   <ul className="ulStyle">
                     {filteredFromAirports.map((airport) => (
                       <li
@@ -211,7 +222,7 @@ function Form({ onFormSubmit, flightSearch }) {
                   </ul>
                 )}
               </div>
-              {fromAirportError && (
+              {fromAirportError && ( // If fromAirportError is true
                 <div className="error">* Please enter a valid airport.</div>
               )}
             </div>
@@ -278,7 +289,7 @@ function Form({ onFormSubmit, flightSearch }) {
                     setDepartureDateError(false);
                   }}
                   min={"2024-01-07"}
-                  max={returnDate ? returnDate : "2024-01-10"}
+                  max={returnDate ? returnDate : "2024-01-09"}
                   className="inputStyle"
                 />
               </div>
@@ -302,7 +313,7 @@ function Form({ onFormSubmit, flightSearch }) {
                         setReturnDateError(false);
                       }}
                       min={departureDate ? departureDate : "2024-01-07"}
-                      max={"2024-01-10"}
+                      max={"2024-01-09"}
                       className="inputStyle"
                     />
                   </div>

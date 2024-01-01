@@ -21,6 +21,7 @@ function List({ waiting, animating, flightData }) {
   };
   useEffect(() => {
     function calculateTimeDifference(startDateTime, endDateTime) {
+      // Calculate time difference between two dates
       const startTime = new Date(startDateTime);
       const endTime = new Date(endDateTime);
       const differenceInMs = endTime - startTime;
@@ -39,6 +40,7 @@ function List({ waiting, animating, flightData }) {
         )
         .then((response) => {
           response.data.flights.forEach((flight) => {
+            // Calculate duration for each flight
             flight.duration = calculateTimeDifference(
               flight.departureTime,
               flight.arrivalTime
@@ -78,16 +80,20 @@ function List({ waiting, animating, flightData }) {
   }, [flightData]);
 
   const sortFlights = (flightsArray) => {
+    // Sort flights
     return flightsArray.sort((a, b) => {
       let comparisonResult = 0;
       if (sortKey === "duration") {
+        // Sort by duration
         const durationA = durationInMinutes(a.duration);
         const durationB = durationInMinutes(b.duration);
         comparisonResult = durationA - durationB;
       } else if (sortKey === "departureTime") {
+        // Sort by departure time
         comparisonResult =
           new Date(a.departureTime) - new Date(b.departureTime);
       } else if (sortKey === "price") {
+        // Sort by price
         comparisonResult = a.price - b.price;
       }
       return sortDirection === "asc" ? comparisonResult : -comparisonResult;
@@ -99,7 +105,7 @@ function List({ waiting, animating, flightData }) {
     return hours * 60 + minutes;
   };
 
-  const sortedDepartureFlights =
+  const sortedDepartureFlights = // Filter departure flights
     flights.flights &&
     sortFlights(
       flights.flights.filter(
@@ -109,7 +115,7 @@ function List({ waiting, animating, flightData }) {
       )
     );
 
-  const sortedReturnFlights =
+  const sortedReturnFlights = // Filter return flights
     flightData.returnDate &&
     returnFlights.flights &&
     sortFlights(
@@ -139,7 +145,7 @@ function List({ waiting, animating, flightData }) {
             </div>
           ) : (
             <>
-              {fetched && (returnFetched || flightData.returnDate === "") ? (
+              {fetched && (returnFetched || flightData.returnDate === "") ? ( // If returnFetched is true or flightData.returnDate is empty
                 <>
                   <div className="flex md:space-x-4 md:flex-row flex-col space-y-2 md:space-y-0 items-center mt-10 justify-center lg:justify-start">
                     <button

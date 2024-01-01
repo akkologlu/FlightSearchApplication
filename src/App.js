@@ -8,32 +8,32 @@ function App() {
   const [waiting, setWaiting] = useState(false);
   const [animationPlayed, setAnimationPlayed] = useState(false);
   const [flightData, setFlightData] = useState({});
-  const listRef = useRef(null); // List komponenti için referans
+  const listRef = useRef(null);
 
   const scrollToView = () => {
     if (listRef.current) {
-      listRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      // If listRef.current is defined
+      listRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); // Scroll to the list
     }
   };
 
   const handleFormSubmit = () => {
     if (!animationPlayed) {
-      scrollToView();
-      setAnimating(true);
-      setAnimationPlayed(true);
+      scrollToView(); // Scroll to the list
+      setAnimating(true); // Start animating
+      setAnimationPlayed(true); // Set animation played to true
 
       setTimeout(() => {
-        setAnimating(false);
-        setWaiting(true);
-        // Form submit edildiğinde list bölümüne kaydır
+        setAnimating(false); // Stop animating
+        setWaiting(true); // Set waiting to true
       }, 2000);
     } else {
-      scrollToView(); // Form daha önce submit edilmişse, yine list bölümüne kaydır
+      scrollToView(); // Scroll to the list
     }
   };
 
   const flightSearch = (flightData) => {
-    setFlightData(flightData);
+    setFlightData(flightData); // Set flight data
   };
 
   return (

@@ -80,7 +80,7 @@ function Flight({ filterFlights }) {
           )}
         </button>
         {detail && (
-          <div className="flex md:flex-row flex-col justify-around my-2 md:text-base text-xs text-gray-600">
+          <div className="flex md:flex-row flex-col my-2 md:text-base text-xs md:w-full justify-around text-gray-600">
             <div className="detailCard">
               <h1 className="detailh1">Economy</h1>
               <div>
@@ -169,20 +169,20 @@ function Flight({ filterFlights }) {
   return (
     <div className="flex w-full font-roboto text-xl text-gray-600">
       <div className="flex flex-col w-full space-y-2">
-        <h1 className="text-center lg:text-start">
+        <h1 className="text-center lg:text-start lg:text-3xl text-base">
           {filterFlights[0][0].departureTime
             .split("T")[0]
             .split("-")
             .slice(0, 3)
             .reverse()
-            .join(".")}
+            .join(".")}{" "}
         </h1>
         {filterFlights[0].map((flight) => (
           <FlightCard key={flight.id} flight={flight} />
         ))}
         {filterFlights[1] && (
           <>
-            <h1 className="text-center lg:text-start">
+            <h1 className="text-center lg:text-start lg:text-3xl text-base">
               {filterFlights[1][0].departureTime
                 .split("T")[0]
                 .split("-")
